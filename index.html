@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Tracker · Recomposición</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1f6f78" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Recomp" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+</head>
+<body>
+  <!-- ---------- PANTALLA DE ACCESO ---------- -->
+  <section id="auth-view" class="auth hidden">
+    <div class="auth-card">
+      <div class="brand">
+        <span class="brand-mark">◆</span>
+        <div>
+          <h1>Recomposición</h1>
+          <p class="muted">Tu tracker de macros y peso, siempre en línea.</p>
+        </div>
+      </div>
+      <div id="auth-error" class="alert alert-error hidden"></div>
+      <label class="field">
+        <span>Correo</span>
+        <input id="auth-email" type="email" autocomplete="email" placeholder="tu@correo.com" />
+      </label>
+      <label class="field">
+        <span>Contraseña</span>
+        <input id="auth-password" type="password" autocomplete="current-password" placeholder="••••••••" />
+      </label>
+      <div class="auth-actions">
+        <button id="btn-login" class="btn btn-primary">Entrar</button>
+        <button id="btn-signup" class="btn btn-ghost">Crear cuenta</button>
+      </div>
+      <p id="auth-hint" class="muted small"></p>
+    </div>
+    <p class="auth-foot muted small">Datos protegidos con Row Level Security. Solo tú ves lo tuyo.</p>
+  </section>
+
+  <!-- ---------- APLICACIÓN ---------- -->
+  <main id="app-view" class="app hidden">
+    <header class="topbar">
+      <div class="topbar-brand"><span class="brand-mark">◆</span> Recomposición</div>
+      <div class="topbar-right">
+        <span id="user-email" class="muted small"></span>
+        <button id="btn-logout" class="btn btn-tiny btn-ghost">Salir</button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="hoy">Hoy</button>
+      <button class="tab" data-tab="peso">Peso</button>
+      <button class="tab" data-tab="alimentos">Alimentos</button>
+      <button class="tab" data-tab="ajustes">Ajustes</button>
+    </nav>
+
+    <!-- ===== HOY ===== -->
+    <section id="tab-hoy" class="tabpanel">
+      <div class="row-between">
+        <label class="field inline">
+          <span>Día</span>
+          <input id="log-date" type="date" />
+        </label>
+      </div>
+
+      <!-- Panel de macros (héroe) -->
+      <div class="macros">
+        <div class="macro macro-kcal">
+          <div class="macro-top"><span class="macro-label">Calorías</span><span id="kcal-rem" class="macro-rem"></span></div>
+          <div class="macro-num"><span id="kcal-eaten">0</span><span class="macro-goal">/ <span id="kcal-goal">0</span></span></div>
+          <div class="bar"><span id="kcal-bar" class="bar-fill"></span></div>
+        </div>
+        <div class="macro-grid">
+          <div class="macro macro-p">
+            <div class="macro-top"><span class="macro-label">Proteína</span><span id="p-rem" class="macro-rem"></span></div>
+            <div class="macro-num"><span id="p-eaten">0</span><span class="macro-goal">/ <span id="p-goal">0</span> g</span></div>
+            <div class="bar"><span id="p-bar" class="bar-fill"></span></div>
+          </div>
+          <div class="macro macro-c">
+            <div class="macro-top"><span class="macro-label">Carbos</span><span id="c-rem" class="macro-rem"></span></div>
+            <div class="macro-num"><span id="c-eaten">0</span><span class="macro-goal">/ <span id="c-goal">0</span> g</span></div>
+            <div class="bar"><span id="c-bar" class="bar-fill"></span></div>
+          </div>
+          <div class="macro macro-f">
+            <div class="macro-top"><span class="macro-label">Grasa</span><span id="f-rem" class="macro-rem"></span></div>
+            <div class="macro-num"><span id="f-eaten">0</span><span class="macro-goal">/ <span id="f-goal">0</span> g</span></div>
+            <div class="bar"><span id="f-bar" class="bar-fill"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Añadir alimento -->
+      <div class="card add-card">
+        <h3>Añadir alimento</h3>
+        <div class="add-grid">
+          <label class="field"><span>Comida</span>
+            <select id="add-meal">
+              <option>Desayuno</option><option>Comida</option><option>Snack</option><option>Cena</option>
+            </select>
+          </label>
+          <label class="field field-food"><span>Alimento</span>
+            <input id="add-food" list="food-list" placeholder="Escribe o elige…" autocomplete="off" />
+            <datalist id="food-list"></datalist>
+          </label>
+          <label class="field field-qty"><span>Cantidad</span>
+            <input id="add-qty" type="number" inputmode="decimal" step="any" min="0" placeholder="0" />
+          </label>
+          <label class="field field-unit"><span>Unidad</span>
+            <select id="add-unit"><option value="g">g</option><option value="porcion">porción</option></select>
+          </label>
+          <button id="btn-add" class="btn btn-primary btn-add">Añadir</button>
+        </div>
+        <p id="add-ref" class="muted small"></p>
+      </div>
+
+      <!-- Registro del día -->
+      <div id="log-list" class="log-list"></div>
+    </section>
+
+    <!-- ===== PESO ===== -->
+    <section id="tab-peso" class="tabpanel hidden">
+      <div id="reco-banner" class="reco"></div>
+      <div class="card add-card">
+        <h3>Registrar peso</h3>
+        <div class="add-grid weight-grid">
+          <label class="field"><span>Fecha</span><input id="w-date" type="date" /></label>
+          <label class="field"><span>Peso (kg)</span><input id="w-kg" type="number" inputmode="decimal" step="any" min="0" placeholder="76.4" /></label>
+          <label class="field"><span>Cintura (cm) · opcional</span><input id="w-waist" type="number" inputmode="decimal" step="any" min="0" placeholder="90" /></label>
+          <button id="btn-weight" class="btn btn-primary btn-add">Guardar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Tendencia</h3>
+        <canvas id="weight-chart" height="150"></canvas>
+      </div>
+      <div id="weekly-table" class="card"></div>
+    </section>
+
+    <!-- ===== ALIMENTOS ===== -->
+    <section id="tab-alimentos" class="tabpanel hidden">
+      <div class="card add-card">
+        <h3>Agregar alimento a tu base</h3>
+        <p class="muted small">Valores por 100 g. Para productos de marca, usa los de la etiqueta.</p>
+        <div class="food-grid">
+          <label class="field"><span>Nombre</span><input id="nf-name" placeholder="Ej. Requesón light" /></label>
+          <label class="field"><span>Categoría</span><input id="nf-cat" placeholder="Lácteo" /></label>
+          <label class="field"><span>kcal /100g</span><input id="nf-kcal" type="number" step="any" /></label>
+          <label class="field"><span>Proteína /100g</span><input id="nf-p" type="number" step="any" /></label>
+          <label class="field"><span>Carbos /100g</span><input id="nf-c" type="number" step="any" /></label>
+          <label class="field"><span>Grasa /100g</span><input id="nf-f" type="number" step="any" /></label>
+          <label class="field"><span>Unidad (nombre)</span><input id="nf-unit" placeholder="1 taza / 1 pieza" /></label>
+          <label class="field"><span>g por unidad</span><input id="nf-gpu" type="number" step="any" placeholder="100" /></label>
+          <button id="btn-newfood" class="btn btn-primary btn-add">Guardar alimento</button>
+        </div>
+      </div>
+      <div id="food-table" class="card"></div>
+    </section>
+
+    <!-- ===== AJUSTES ===== -->
+    <section id="tab-ajustes" class="tabpanel hidden">
+      <div class="card">
+        <h3>Objetivos y parámetros</h3>
+        <div class="food-grid">
+          <label class="field"><span>Calorías objetivo</span><input id="cfg-kcal" type="number" /></label>
+          <label class="field"><span>Proteína (g)</span><input id="cfg-p" type="number" /></label>
+          <label class="field"><span>Grasa (g)</span><input id="cfg-f" type="number" /></label>
+          <label class="field"><span>Altura (m)</span><input id="cfg-h" type="number" step="any" /></label>
+          <label class="field"><span>Ritmo mín (kg/sem)</span><input id="cfg-rmin" type="number" step="any" /></label>
+          <label class="field"><span>Ritmo máx (kg/sem)</span><input id="cfg-rmax" type="number" step="any" /></label>
+          <label class="field"><span>Umbral recorte (kg/sem)</span><input id="cfg-cut" type="number" step="any" /></label>
+          <label class="field"><span>Alerta cintura (cm/sem)</span><input id="cfg-waist" type="number" step="any" /></label>
+          <label class="field"><span>Ajuste por escalón (kcal)</span><input id="cfg-step" type="number" /></label>
+          <button id="btn-cfg" class="btn btn-primary btn-add">Guardar ajustes</button>
+        </div>
+        <p class="muted small">Los carbohidratos se calculan solos: (kcal − proteína×4 − grasa×9) ÷ 4.</p>
+      </div>
+
+      <div class="card">
+        <h3>Exportar datos (CSV)</h3>
+        <p class="muted small">Descarga tus comidas y tu peso en un rango de fechas para abrirlos en Excel o compartirlos.</p>
+        <div class="food-grid">
+          <label class="field"><span>Desde</span><input id="exp-from" type="date" /></label>
+          <label class="field"><span>Hasta</span><input id="exp-to" type="date" /></label>
+          <button id="btn-export-food" class="btn btn-primary btn-add">Descargar comidas</button>
+          <button id="btn-export-weight" class="btn btn-ghost btn-add">Descargar peso</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="toast" class="toast hidden"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
