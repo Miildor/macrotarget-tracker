@@ -1,4 +1,4 @@
-const CACHE="recomp-v1";
+const CACHE="recomp-v2";
 const ASSETS=["./","./index.html","./styles.css","./app.js","./config.js",
   "./manifest.json","./icon-192.png","./icon-512.png"];
 self.addEventListener("install",e=>{
