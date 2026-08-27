@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Tracker · Recomposición</title>
+  <script>(function(){try{var t=localStorage.getItem("mt-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();</script>
+  <title>MacroTarget</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -13,7 +14,7 @@
   <meta name="theme-color" content="#1f6f78" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Recomp" />
+  <meta name="apple-mobile-web-app-title" content="MacroTarget" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 </head>
 <body>
@@ -23,7 +24,7 @@
       <div class="brand">
         <span class="brand-mark">◆</span>
         <div>
-          <h1>Recomposición</h1>
+          <h1>MacroTarget</h1>
           <p class="muted">Tu tracker de macros y peso, siempre en línea.</p>
         </div>
       </div>
@@ -48,8 +49,9 @@
   <!-- ---------- APLICACIÓN ---------- -->
   <main id="app-view" class="app hidden">
     <header class="topbar">
-      <div class="topbar-brand"><span class="brand-mark">◆</span> Recomposición</div>
+      <div class="topbar-brand"><span class="brand-mark">◆</span> MacroTarget</div>
       <div class="topbar-right">
+        <button id="btn-theme" class="btn btn-tiny btn-ghost" aria-label="Cambiar tema">☀</button>
         <span id="user-email" class="muted small"></span>
         <button id="btn-logout" class="btn btn-tiny btn-ghost">Salir</button>
       </div>
@@ -98,7 +100,7 @@
       </div>
 
       <!-- Añadir alimento -->
-      <div class="card add-card">
+      <div class="card add-card has-combo">
         <h3>Añadir alimento</h3>
         <div class="add-grid">
           <label class="field"><span>Comida</span>
@@ -107,8 +109,11 @@
             </select>
           </label>
           <label class="field field-food"><span>Alimento</span>
-            <input id="add-food" list="food-list" placeholder="Escribe o elige…" autocomplete="off" />
-            <datalist id="food-list"></datalist>
+            <div class="combo" id="food-combo">
+              <input id="add-food" placeholder="Escribe o elige…" autocomplete="off" />
+              <button type="button" id="food-combo-toggle" class="combo-toggle" aria-label="Ver alimentos">▾</button>
+              <ul id="food-combo-list" class="combo-list hidden"></ul>
+            </div>
           </label>
           <label class="field field-qty"><span>Cantidad</span>
             <input id="add-qty" type="number" inputmode="decimal" step="any" min="0" placeholder="0" />
@@ -117,6 +122,7 @@
             <select id="add-unit"><option value="g">g</option><option value="porcion">porción</option></select>
           </label>
           <button id="btn-add" class="btn btn-primary btn-add">Añadir</button>
+          <button id="btn-add-cancel" class="btn btn-ghost btn-add hidden">Cancelar edición</button>
         </div>
         <p id="add-ref" class="muted small"></p>
       </div>
@@ -159,6 +165,7 @@
           <label class="field"><span>Unidad (nombre)</span><input id="nf-unit" placeholder="1 taza / 1 pieza" /></label>
           <label class="field"><span>g por unidad</span><input id="nf-gpu" type="number" step="any" placeholder="100" /></label>
           <button id="btn-newfood" class="btn btn-primary btn-add">Guardar alimento</button>
+          <button id="btn-newfood-cancel" class="btn btn-ghost btn-add hidden">Cancelar edición</button>
         </div>
       </div>
       <div id="food-table" class="card"></div>
@@ -178,6 +185,12 @@
           <label class="field"><span>Umbral recorte (kg/sem)</span><input id="cfg-cut" type="number" step="any" /></label>
           <label class="field"><span>Alerta cintura (cm/sem)</span><input id="cfg-waist" type="number" step="any" /></label>
           <label class="field"><span>Ajuste por escalón (kcal)</span><input id="cfg-step" type="number" /></label>
+          <label class="field"><span>Fase</span>
+            <select id="cfg-phase">
+              <option value="bulk">Volumen (lean gain)</option>
+              <option value="cut">Corte (definición)</option>
+            </select>
+          </label>
           <button id="btn-cfg" class="btn btn-primary btn-add">Guardar ajustes</button>
         </div>
         <p class="muted small">Los carbohidratos se calculan solos: (kcal − proteína×4 − grasa×9) ÷ 4.</p>
