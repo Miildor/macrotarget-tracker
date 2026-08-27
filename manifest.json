@@ -1,6 +1,6 @@
 {
-  "name": "Recomposición · Tracker",
-  "short_name": "Recomp",
+  "name": "MacroTarget",
+  "short_name": "MacroTarget",
   "description": "Tracker de macros y peso",
   "start_url": "./index.html",
   "scope": "./",
