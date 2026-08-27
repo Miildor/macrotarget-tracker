@@ -344,6 +344,7 @@ async function refreshWeight(){
   const weeks=weeklyAverages(rows);
   renderReco(weeks);
   renderWeeklyTable(weeks);
+  renderWeightHistory(rows);
 }
 function weeklyAverages(rows){
   const groups={};
@@ -398,6 +399,31 @@ function renderWeeklyTable(weeks){
   el.innerHTML=`<h3>Semanas (promedio)</h3>
     <table><thead><tr><th>Semana</th><th class="num">Peso</th><th class="num">Δ kg</th><th class="num">Cintura</th></tr></thead>
     <tbody>${rows}</tbody></table>`;
+}
+function renderWeightHistory(rows){
+  const el=$("weight-history");
+  if(!rows.length){ el.innerHTML=`<h3>Historial de pesajes</h3><p class="empty">Sin registros aún.</p>`; return; }
+  const body=rows.slice().reverse().map(r=>`<tr>
+    <td>${r.log_date}</td>
+    <td class="num">${r.weight_kg!=null?r1(+r.weight_kg):"—"}</td>
+    <td class="num">${r.waist_cm!=null?r1(+r.waist_cm):"—"}</td>
+    <td class="l-actions"><button class="l-edit" data-edit-weight="${r.id}" title="Editar">✎</button><button class="l-del" data-del-weight="${r.id}" title="Eliminar">✕</button></td>
+  </tr>`).join("");
+  el.innerHTML=`<h3>Historial de pesajes</h3>
+    <table><thead><tr><th>Fecha</th><th class="num">Peso</th><th class="num">Cintura</th><th></th></tr></thead>
+    <tbody>${body}</tbody></table>`;
+  el.querySelectorAll("[data-edit-weight]").forEach(b=>b.onclick=()=>{
+    const r=rows.find(x=>String(x.id)===String(b.dataset.editWeight)); if(!r) return;
+    $("w-date").value=r.log_date;
+    $("w-kg").value=r.weight_kg!=null?r.weight_kg:"";
+    $("w-waist").value=r.waist_cm!=null?r.waist_cm:"";
+    $("w-date").scrollIntoView({behavior:"smooth",block:"center"}); $("w-kg").focus();
+    toast("Editá y toca Guardar (sobrescribe ese día)");
+  });
+  el.querySelectorAll("[data-del-weight]").forEach(b=>b.onclick=async()=>{
+    await sb.from("weight_log").delete().eq("id",b.dataset.delWeight).eq("user_id",state.user.id);
+    toast("Eliminado"); await refreshWeight();
+  });
 }
 function tickColor(){ return (getComputedStyle(document.body).getPropertyValue("--ink-2")||"#3a4a47").trim(); }
 function gridColor(){ return (getComputedStyle(document.body).getPropertyValue("--line")||"#e2e7e5").trim(); }
