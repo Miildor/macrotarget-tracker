@@ -69,3 +69,5 @@ En GitHub: **Settings → Pages → Source: Deploy from a branch → main / (roo
 - Valores de alimentos: USDA FoodData Central (referencia por 100 g). Para productos de marca, usa la etiqueta.
 - Todo se guarda en tu cuenta de Supabase; puedes entrar desde cualquier dispositivo.
 - Es un punto de partida sólido; se le puede añadir historial InBody, export CSV, etc.
+
+<!-- redeploy -->
